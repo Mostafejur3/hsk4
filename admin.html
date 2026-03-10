@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSK 4 Admin Panel</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Admin-specific styles */
+        .admin-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .admin-header {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .admin-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .admin-title i {
+            font-size: 2.5rem;
+            color: #667eea;
+        }
+        
+        .admin-title h1 {
+            font-size: 2rem;
+            color: #333;
+        }
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .admin-card h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        
+        .admin-card h2 i {
+            color: #667eea;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .file-upload {
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .file-upload i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .file-upload p {
+            color: #666;
+        }
+        
+        .file-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f3ff;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .file-info.active {
+            display: block;
+        }
+        
+        .preview-area {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .data-preview {
+            margin-top: 1rem;
+        }
+        
+        .admin-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .connection-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 1rem;
+        }
+        
+        .status-connected {
+            background: #d1fae5;
+            color: #10b981;
+        }
+        
+        .status-disconnected {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+        
+        .user-progress-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .user-progress-table th,
+        .user-progress-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .user-progress-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .user-progress-table tr:hover {
+            background: #f0f3ff;
+        }
+        
+        .progress-bar-small {
+            width: 100px;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill-small {
+            height: 100%;
+            background: #667eea;
+        }
+        
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            padding: 0.3rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        .edit-btn {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 1rem;
+        }
+        
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #667eea;
+            text-decoration: none;
+            margin-bottom: 1rem;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>HSK 4 Admin Panel</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-arrow-left"></i> Back to Platform</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="admin-container">
+        <a href="index.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> Return to Learning Platform
+        </a>
+        
+        <!-- Admin Header -->
+        <div class="admin-header">
+            <div class="admin-title">
+                <i class="fas fa-crown"></i>
+                <h1>Administrator Dashboard</h1>
+                <span class="connection-status status-disconnected" id="connectionStatus">
+                    <i class="fas fa-circle"></i> Not Connected
+                </span>
+            </div>
+            <p>Manage HSK 4 learning materials, track user progress, and configure database connections.</p>
+            
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalUsers">24</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalDialogues">45</div>
+                    <div class="stat-label">Dialogues</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalReadings">32</div>
+                    <div class="stat-label">Reading Texts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalQuestions">128</div>
+                    <div class="stat-label">Practice Questions</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('database')">Database Connection</div>
+            <div class="tab" onclick="switchTab('upload')">Upload Materials</div>
+            <div class="tab" onclick="switchTab('manage')">Manage Content</div>
+            <div class="tab" onclick="switchTab('users')">User Progress</div>
+        </div>
+        
+        <!-- Database Connection Tab -->
+        <div id="tab-database" class="tab-content active">
+            <div class="admin-grid">
+                <!-- Supabase Connection Form -->
+                <div class="admin-card">
+                    <h2><i class="fas fa-database"></i> Supabase Connection</h2>
+                    
+                    <div class="form-group">
+                        <label>Project URL</label>
+                        <input type="text" id="supabaseUrl" placeholder="https://yourproject.supabase.co">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>API Key</label>
+                        <input type="password" id="supabaseKey" placeholder="your-supabase-api-key">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Default Table</label>
+                        <select id="defaultTable">
+                            <option value="dialogues">Dialogues</option>
+                            <option value="reading_texts">Reading Texts</option>
+                            <option value="mcqs">MCQs</option>
+                            <option value="fill_blanks">Fill in Blanks</option>
+                        </select>
+                    </div>
+                    
+                    <button class="admin-btn btn-primary" onclick="connectSupabase()">
+                        <i class="fas fa-plug"></i> Connect to Supabase
+                    </button>
+                    
+                    <button class="admin-btn btn-success" onclick="testConnection()" style="margin-left: 1rem;">
+                        <i class="fas fa-vial"></i> Test Connection
+                    </button>
+                </div>
+                
+                <!-- Connection Status & Data Preview -->
+                <div class="admin-card">
+                    <h2><i class="fas fa-eye"></i> Data Preview</h2>
+                    
+                    <div class="form-group">
+                        <label>Select Table to Preview</label>
+                        <select id="previewTable" onchange="previewTableData()">
+                            <option value="dialogues">Dialogues</option>
+                            <option value="reading_texts">Reading Texts</option>
+                            <option value="mcqs">MCQs</option>
+                            <option value="fill_blanks">Fill in Blanks</option>
+                        </select>
+                    </div>
+                    
+                    <div class="preview-area" id="dataPreview">
+                        <p>Connect to database to preview data...</p>
+                    </div>
+                    
+                    <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+                        <button class="admin-btn btn-primary" onclick="refreshPreview()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="admin-btn btn-danger" onclick="clearPreview()">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Upload Materials Tab -->
+        <div id="tab-upload" class="tab-content">
+            <div class="admin-grid">
+                <!-- File Upload -->
+                <div class="admin-card">
+                    <h2><i class="fas fa-upload"></i> Bulk Upload Materials</h2>
+                    
+                    <div class="form-group">
+                        <label>Content Type</label>
+                        <select id="uploadType">
+                            <option value="dialogues">Dialogues</option>
+                            <option value="short_texts">Short Reading Texts</option>
+                            <option value="long_texts">Long Reading Texts</option>
+                            <option value="fill_blanks">Fill in the Blanks</option>
+                            <option value="mcqs">Multiple Choice Questions</option>
+                        </select>
+                    </div>
+                    
+                    <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload or drag and drop</p>
+                        <p style="font-size: 0.8rem; color: #999;">Supported formats: .txt, .json</p>
+                        <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelect(event)">
+                    </div>
+                    
+                    <div class="file-info" id="fileInfo">
+                        <p><strong>Selected file:</strong> <span id="fileName"></span></p>
+                        <p><strong>Size:</strong> <span id="fileSize"></span></p>
+                        <p><strong>Type:</strong> <span id="fileType"></span></p>
+                    </div>
+                    
+                    <div style="margin-top: 1rem;">
+                        <button class="admin-btn btn-primary" onclick="parseAndPreview()">
+                            <i class="fas fa-file-import"></i> Parse & Preview
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Parsed Data Preview -->
+                <div class="admin-card">
+                    <h2><i class="fas fa-list"></i> Parsed Data Preview</h2>
+                    
+                    <div class="preview-area" id="parsedPreview">
+                        <p>Upload a file to preview parsed data...</p>
+                    </div>
+                    
+                    <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button class="admin-btn btn-success" onclick="uploadToDatabase()">
+                            <i class="fas fa-save"></i> Upload to Database
+                        </button>
+                        <button class="admin-btn btn-danger" onclick="clearParsedPreview()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Manage Content Tab -->
+        <div id="tab-manage" class="tab-content">
+            <div class="admin-card">
+                <h2><i class="fas fa-edit"></i> Manage Content</h2>
+                
+                <div class="form-group" style="display: flex; gap: 1rem;">
+                    <select id="manageType" style="flex: 1;" onchange="loadContentForManagement()">
+                        <option value="dialogues">Dialogues</option>
+                        <option value="short_texts">Short Texts</option>
+                        <option value="long_texts">Long Texts</option>
+                        <option value="fill_blanks">Fill in Blanks</option>
+                        <option value="mcqs">MCQs</option>
+                    </select>
+                    <button class="admin-btn btn-primary" onclick="loadContentForManagement()">
+                        <i class="fas fa-search"></i> Load
+                    </button>
+                    <button class="admin-btn btn-success" onclick="showAddNewForm()">
+                        <i class="fas fa-plus"></i> Add New
+                    </button>
+                </div>
+                
+                <!-- Content List -->
+                <div class="preview-area" id="contentList" style="max-height: 400px;">
+                    <p>Select a content type to load items...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Progress Tab -->
+        <div id="tab-users" class="tab-content">
+            <div class="admin-card">
+                <h2><i class="fas fa-users"></i> User Progress Tracking</h2>
+                
+                <table class="user-progress-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Dialogues</th>
+                            <th>Readings</th>
+                            <th>Quizzes</th>
+                            <th>Last Active</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userProgressBody">
+                        <tr>
+                            <td>john_doe</td>
+                            <td>
+                                <div class="progress-bar-small">
+                                    <div class="progress-fill-small" style="width: 70%"></div>
+                                </div>
+                                7/10
+                            </td>
+                            <td>
+                                <div class="progress-bar-small">
+                                    <div class="progress-fill-small" style="width: 60%"></div>
+                                </div>
+                                6/10
+                            </td>
+                            <td>
+                                <div class="progress-bar-small">
+                                    <div class="progress-fill-small" style="width: 80%"></div>
+                                </div>
+                                8/10
+                            </td>
+                            <td>2 hours ago</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn edit-btn" onclick="viewUserDetails('john_doe')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn delete-btn" onclick="resetUserProgress('john_doe')">
+                                        <i class="fas fa-redo-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>mary_smith</td>
+                            <td>
+                                <div class="progress-bar-small">
+                                    <div class="progress-fill-small" style="width: 90%"></div>
+                                </div>
+                                9/10
+                            </td>
+                            <td>
+                                <div class="progress-bar-small">
+                                    <div class="progress-fill-small" style="width: 80%"></div>
+                                </div>
+                                8/10
+                            </td>
+                            <td>
+                                <div class="progress-bar-small">
+                                    <div class="progress-fill-small" style="width: 70%"></div>
+                                </div>
+                                7/10
+                            </td>
+                            <td>5 minutes ago</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn edit-btn" onclick="viewUserDetails('mary_smith')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn delete-btn" onclick="resetUserProgress('mary_smith')">
+                                        <i class="fas fa-redo-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/supabase.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
